@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>title</title>
+    <script src="jquery-2.1.4.js"></script>
+</head>
+
+<body>
+    <canvas id="canvas" width="800" height="600" style="border:1px solid red"></canvas>
+    <script>
+       function Chain(opt){
+           if(!opt) throw new Error("请填写参数");
+
+          // 处理必填参数
+           var requireArgs ="bigX,bigY,canvas".split(",");
+           requireArgs.forEach(function(v){
+               if(!opt.hasOwnProperty(v)) {
+                   throw new Error("请输入参数属性"+v);
+               }
+           })
+
+         //处理默认参数
+          var defaultOpt ={
+             bigR: 150,
+             smallR: 20,
+             startRadian:2*Math.PI/3
+          };
+
+           for(var key in defaultOpt){
+               this[key]=defaultOpt[key];
+           }
+           for(var key in opt){
+               this[key]=opt[key];
+           }
+           this.ctx = this.canvas.getContext("2d");
+           this.init();
+       }
+       Chain.prototype = {
+           constructo:Chain,
+           init:function(){
+            var self = this;
+            var timer = setInterval(function(){
+                 self.ctx.clearRect(0,0,self.canvas.width,self.canvas.height);
+                 self.ctx.beginPath();
+                 self.startRadian += 0.001*Math.PI;
+                 self.drawBigYuan();
+                 self.drawSmallYuan();
+            },10)
+           },
+           drawBigYuan:function(){
+               var ctx = this.ctx;
+                ctx.arc(this.bigX,this.bigY,this.bigR,0,2*Math.PI);
+                ctx.strokeStyle = "red";
+                ctx.lineWidth = 5;
+                ctx.stroke();
+
+           },
+           drawSmallYuan:function(){
+               var ctx = this.ctx;
+                for(var i=0;i<this.data.length;i++){
+                    console.log(this.data.length);
+                 //计算出每一个小圆的圆心位于大圆上的弧度值
+                    var radian=this.startRadian+i*2*Math.PI/this.data.length;
+                    var h = this.bigR*Math.sin(radian);
+                    var b = this.bigR*Math.cos(radian);
+                    var x = this.bigX+b;
+                    var y = this.bigY+h;
+                    ctx.beginPath();
+                    ctx.arc(x,y,this.smallR,0,2*Math.PI);
+                    ctx.fillStyle = "red";
+                    ctx.fill();
+                     
+           
+                    ctx.fillText(this.data[i],x,y);
+               }
+           }
+       }
+       var opt ={
+             bigX: 300,
+             bigY: 300,
+             bigR: 150,
+             smallR: 50,
+             startRadian:2*Math.PI/3,//小圆的圆心位于大圆上的弧度值
+            //  num: 5,
+             canvas:canvas,
+             data:["前端","UI设计","全栈","Java","IOS"]
+       }
+       var Chain = new Chain(opt);  
+           
+    </script>
+</body>
+</html>
